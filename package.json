@@ -1,0 +1,10 @@
+{
+	"name": "bubble-3-site",
+	"version": "1.0.0",
+	"scripts": {
+		"start": "python -m SimpleHTTPServer 8000"
+	},
+	"keywords": [],
+	"author": "wvbe",
+	"license": "ISC"
+}

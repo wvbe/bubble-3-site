@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+	<head>
+		<!-- webdevelopment by x-54.com -->
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=0.8, maximum-scale=0.8,user-scalable=0"
+		/>
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+		<link href="style.css" rel="stylesheet" type="text/css" />
+		<!-- <script
+			crossorigin
+			src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"
+		></script> -->
+		<script type="module">
+			import React, { ReactDOM } from './dependencies/React.js';
+			import { CanvasComponent } from './components/Canvas.js';
+			// const current_configuration = {
+			// 	population: 500,
+			// 	node_size: 2,
+			// 	radius_near: 40,
+			// 	radius_far: 800,
+			// 	radius_void: 1200,
+			// 	attraction_multiplier: 0.005,
+			// 	repulsion_multiplier: 0.1,
+			// 	slowdown_multiplier: 0.9
+			// };
+
+			ReactDOM.render(
+				React.createElement(CanvasComponent, null, 'boo'),
+				document.getElementById('reactive-canvas')
+			);
+		</script>
+		<script type="text/javascript"></script>
+	</head>
+	<body>
+		<div id="reactive-canvas" />
+	</body>
+</html>
