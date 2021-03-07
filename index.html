@@ -35,22 +35,25 @@
 		<script type="module">
 			import React, { ReactDOM } from './dependencies/React.js';
 			import { CanvasComponent, ContextDebugComponent } from './components/Canvas.js';
-			// const current_configuration = {
-			// 	population: 500,
-			// 	node_size: 2,
-			// 	radius_near: 40,
-			// 	radius_far: 800,
-			// 	radius_void: 1200,
-			// 	attraction_multiplier: 0.005,
-			// 	repulsion_multiplier: 0.1,
-			// 	slowdown_multiplier: 0.9
-			// };
+			import { NodeComponent } from './components/Node.js';
 
 			ReactDOM.render(
 				React.createElement(
 					CanvasComponent,
-					null,
-					React.createElement(ContextDebugComponent)
+					{
+						population: 500,
+						node_size: 2,
+						radius_near: 40,
+						radius_far: 800,
+						radius_void: 1200,
+						attraction_multiplier: 0.005,
+						repulsion_multiplier: 0.1,
+						slowdown_multiplier: 0.9
+					},
+					Array.from(new Array(3000)).map(() =>
+						React.createElement(NodeComponent, { size: 2 })
+					)
+					// React.createElement(ContextDebugComponent)
 				),
 				document.getElementById('reactive-canvas')
 			);
