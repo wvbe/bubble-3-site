@@ -15,14 +15,26 @@ export class NodeCollection {
 		this.nodes = [];
 	}
 	iterate(...args) {
-		this.nodes.forEach(node => node.iterate(...args));
+		this.forEach(node => node.iterate(...args));
 	}
 	draw(...args) {
-		this.nodes.forEach(node => node.draw(...args));
+		this.forEach(node => node.draw(...args));
 	}
 	add(inst) {
 		this.nodes.push(inst);
 		return () => this.nodes.splice(this.nodes.indexOf(inst), 1);
+	}
+	filter(...args) {
+		return this.nodes.filter(...args);
+	}
+	map(...args) {
+		return this.nodes.map(...args);
+	}
+	forEach(...args) {
+		return this.nodes.forEach(...args);
+	}
+	find(...args) {
+		return this.nodes.find(...args);
 	}
 }
 
@@ -45,7 +57,7 @@ export function CanvasComponent({ children }) {
 	const canvasRef = useRef(null);
 	const x = useRef({
 		size: { width: window.innerWidth, height: window.innerHeight },
-		nodes: new NodeCollection()
+		collection: new NodeCollection()
 	});
 	const [sizes, setSizes] = useState(x.current.size);
 
@@ -63,9 +75,9 @@ export function CanvasComponent({ children }) {
 			if (!enabled) {
 				return;
 			}
-			x.current.nodes.iterate(x.current);
+			x.current.collection.iterate(x.current);
 			context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-			x.current.nodes.draw(x.current, context);
+			x.current.collection.draw(x.current, context);
 			window.requestAnimationFrame(iterate);
 		})();
 

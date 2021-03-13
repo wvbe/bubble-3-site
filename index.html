@@ -41,7 +41,7 @@
 				React.createElement(
 					CanvasComponent,
 					{
-						population: 500,
+						population: 50,
 						node_size: 2,
 						radius_near: 40,
 						radius_far: 800,
@@ -50,8 +50,8 @@
 						repulsion_multiplier: 0.1,
 						slowdown_multiplier: 0.9
 					},
-					Array.from(new Array(3000)).map(() =>
-						React.createElement(NodeComponent, { size: 2 })
+					Array.from(new Array(300)).map((_, i) =>
+						React.createElement(NodeComponent, { key: i, size: 2 })
 					)
 					// React.createElement(ContextDebugComponent)
 				),
