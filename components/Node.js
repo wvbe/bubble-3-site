@@ -28,8 +28,8 @@ const behavioursByDistance = [
 			a.dy += force * (a.y - b.y);
 			b.dx -= force * (a.x - b.x);
 			b.dy -= force * (a.y - b.y);
-			a.connections.push(b);
-			b.connections.push(a);
+			a.connections.push({ node: b, color: `rgba(0,0,0,${urgencyLinearToDistance})` });
+			b.connections.push({ node: a, color: `rgba(0,0,0,${urgencyLinearToDistance})` });
 		}
 	],
 	[
@@ -44,8 +44,8 @@ const behavioursByDistance = [
 			b.dx += force * (a.x - b.x);
 			b.dy += force * (a.y - b.y);
 
-			a.connections.push(b);
-			b.connections.push(a);
+			// a.connections.push({ node: b, color: `rgba(0,0,255,1)` });
+			// b.connections.push({ node: a, color: `rgba(0,0,255,1)` });
 		}
 	]
 ];
@@ -130,20 +130,22 @@ export class Node {
 	}
 
 	draw({ size, collection }, context) {
-		context.beginPath();
-		context.strokeStyle = this.color;
-		context.arc(this.x, this.y, this.size, 0, Math.PI * 2, true);
-		context.closePath();
-
-		context.stroke();
 		this.connections.forEach(conn => {
+			context.strokeStyle = conn.color;
+			context.lineWidth = 0.25;
 			context.beginPath();
-
 			context.moveTo(this.x, this.y);
-			context.lineTo(conn.x, conn.y);
+			context.lineTo(conn.node.x, conn.node.y);
+			context.closePath();
 			context.stroke();
 		});
 
+		context.strokeStyle = this.color;
+		context.lineWidth = 1;
+		context.beginPath();
+		context.arc(this.x, this.y, this.size, 0, Math.PI * 2, true);
+		context.closePath();
+		context.stroke();
 		this.connections.splice(0, this.connections.length);
 	}
 
