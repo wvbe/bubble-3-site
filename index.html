@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html dir="ltr" lang="en-US">
 	<head>
-		<!-- webdevelopment by x-54.com -->
+		<title>bubble-3-site</title>
 		<meta charset="UTF-8" />
 		<meta
 			name="viewport"
@@ -16,16 +16,54 @@
 				padding: 0;
 				width: 100vw;
 				height: 100vh;
+				font-family: sans-serif;
 			}
 			body {
 				background: url('./assets/graphy.png');
 			}
 			canvas {
 				position: absolute;
+				z-index: 0;
 				top: 0;
 				left: 0;
 				right: 0;
 				bottom: 0;
+			}
+			form {
+				position: absolute;
+				z-index: 1;
+				top: 20px;
+				left: 20px;
+				width: 200px;
+			}
+			fieldset {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				border: 1px solid black;
+				padding: 0px;
+				background: white;
+				border-radius: 3px;
+			}
+			label {
+				padding: 0.25em 12px;
+			}
+			legend {
+				font-size: 12px;
+				margin-left: 12px;
+			}
+			input {
+				border: none;
+				padding: 0.25em 12px;
+				width: 100%;
+				box-sizing: border-box;
+				font-size: 20px;
+				color: inherit;
+			}
+			label {
+			}
+			.invalid {
+				color: red;
 			}
 		</style>
 		<!-- <script
@@ -36,24 +74,18 @@
 			import React, { ReactDOM } from './dependencies/React.js';
 			import { CanvasComponent, ContextDebugComponent } from './components/Canvas.js';
 			import { NodeComponent } from './components/Node.js';
+			import { MouseMoveControl } from './components/MouseMoveControl.js';
+			import { NodePropertiesForm } from './components/NodePropertiesForm.js';
 
 			ReactDOM.render(
 				React.createElement(
 					CanvasComponent,
-					{
-						population: 50,
-						node_size: 2,
-						radius_near: 40,
-						radius_far: 800,
-						radius_void: 1200,
-						attraction_multiplier: 0.005,
-						repulsion_multiplier: 0.1,
-						slowdown_multiplier: 0.9
-					},
+					{},
 					Array.from(new Array(500)).map((_, i) =>
 						React.createElement(NodeComponent, { key: i, size: 2 })
-					)
-					// React.createElement(ContextDebugComponent)
+					),
+					React.createElement(MouseMoveControl, { radius: 200, force: 1 }),
+					React.createElement(NodePropertiesForm)
 				),
 				document.getElementById('reactive-canvas')
 			);

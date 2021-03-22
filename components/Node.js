@@ -11,34 +11,48 @@ const constants = {
 function randomWithinBounds(min, max) {
 	return min + (max - min) * Math.random();
 }
-
-const RADIUS_NEAR = 40;
-const RADIUS_FAR = 700;
-const RADIUS_VOID = 800;
-const ATTRACTION_MULTIPLIER = 0.005;
-const REPULSION_MULTIPLIER = 0.1;
+function rasterizeVector({ x, y }, radius) {
+	if ((x == 0 && y == 0) || radius == 0) {
+		return { x: 0, y: 0 };
+	}
+	// multiply by the ratio of desired radius to (pythagoras of) x/y vector
+	const multiplier = radius / Math.sqrt(y * y + x * x);
+	return { x: x * multiplier, y: y * multiplier };
+}
 
 const behavioursByDistance = [
 	[
-		(a, b, distance) => distance < RADIUS_NEAR,
+		(a, b, distance) => distance < (a.radiusNear + b.radiusNear) / 2,
 		(a, b, distance) => {
-			const urgencyLinearToDistance = (RADIUS_NEAR - distance) / RADIUS_NEAR;
-			var force = REPULSION_MULTIPLIER * Math.pow(urgencyLinearToDistance, 2);
+			const radiusNear = (a.radiusNear + b.radiusNear) / 2;
+			const repulsionForceMultiplier =
+				(a.repulsionForceMultiplier + b.repulsionForceMultiplier) / 2;
+
+			const urgencyLinearToDistance = (radiusNear - distance) / radiusNear;
+
+			var force = repulsionForceMultiplier * Math.pow(urgencyLinearToDistance, 2);
 			a.dx += force * (a.x - b.x);
 			a.dy += force * (a.y - b.y);
 			b.dx -= force * (a.x - b.x);
 			b.dy -= force * (a.y - b.y);
+
 			a.connections.push({ node: b, color: `rgba(0,0,0,${urgencyLinearToDistance})` });
 			b.connections.push({ node: a, color: `rgba(0,0,0,${urgencyLinearToDistance})` });
 		}
 	],
 	[
 		(a, b, distance) => {
-			return distance > RADIUS_FAR && distance < RADIUS_VOID;
+			return (
+				distance > (a.radiusFar + b.radiusFar) / 2 &&
+				distance < (a.radiusFalloff + b.radiusFalloff) / 2
+			);
 		},
 		(a, b, distance) => {
-			// aantrekken
-			var force = Math.pow((ATTRACTION_MULTIPLIER * distance) / RADIUS_VOID, 1.6);
+			const radiusFalloff = (a.radiusFalloff + b.radiusFalloff) / 2;
+			const attractionForceMultiplier =
+				(a.attractionForceMultiplier + b.attractionForceMultiplier) / 2;
+
+			var force = Math.pow((attractionForceMultiplier * distance) / radiusFalloff, 1.6);
 			a.dx -= force * (a.x - b.x);
 			a.dy -= force * (a.y - b.y);
 			b.dx += force * (a.x - b.x);
@@ -55,10 +69,18 @@ export class Node {
 		this.y = 10;
 		this.dx = 0;
 		this.dy = 0;
-		this.size = 5;
-		this.inertiaDecay = 1;
+
 		this.color = 'black';
 		this.connections = [];
+
+		this.radiusNear = 40;
+		this.radiusFar = 700;
+		this.radiusFalloff = 800;
+		this.attractionForceMultiplier = 0.005;
+		this.repulsionForceMultiplier = 0.1;
+		this.frictionForceMultiplier = 0.95;
+
+		this.size = 5;
 	}
 
 	iterate({ size, collection }) {
@@ -125,8 +147,8 @@ export class Node {
 		}
 
 		// Slow down gradually
-		this.dx *= this.inertiaDecay;
-		this.dy *= this.inertiaDecay;
+		this.dx *= this.frictionForceMultiplier;
+		this.dy *= this.frictionForceMultiplier;
 	}
 
 	draw({ size, collection }, context) {
@@ -149,6 +171,17 @@ export class Node {
 		this.connections.splice(0, this.connections.length);
 	}
 
+	explodeFrom(x, y, force, radius) {
+		var ddx = x - this.x;
+		var ddy = y - this.y;
+		var dist = Math.sqrt(ddx * ddx + ddy * ddy);
+		if (dist <= radius) {
+			var nd = rasterizeVector({ x: -ddx, y: -ddy }, force * (1 - dist / radius));
+			this.dx += nd.x;
+			this.dy += nd.y;
+		}
+	}
+
 	static fromJson(opts) {
 		const inst = new Node();
 		Object.assign(inst, opts);
@@ -166,7 +199,7 @@ export function NodeComponent(options) {
 				y: size.height / 2 + randomWithinBounds(-10, 10),
 				dx: randomWithinBounds(-10, 10),
 				dy: randomWithinBounds(-10, 10),
-				inertiaDecay: 0.8 //randomWithinBounds(0.7, 0.95)
+				frictionForceMultiplier: 0.95 //randomWithinBounds(0.7, 0.95)
 			})
 		);
 	}, []);
